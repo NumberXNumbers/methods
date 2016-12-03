@@ -5,12 +5,13 @@ import (
 	"testing"
 
 	gcf "github.com/NumberXNumbers/types/gc/functions"
+	gcfargs "github.com/NumberXNumbers/types/gc/functions/arguments"
 )
 
 func TestBisection1D(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	testFunction := gcf.MakeFunc(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	testFunction := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
 
 	rootA, errA := Bisection1D(0, 2, math.Pow(10, -4), 100, testFunction)
 
@@ -30,9 +31,9 @@ func TestBisection1D(t *testing.T) {
 }
 
 func TestFixedPointIteration1D(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	testFunction := gcf.MakeFunc(regVars, "Sqrt", "(", "(", 5, "-", x, "-", x, "^", 3, ")", "/", 5, ")")
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	testFunction := gcf.MakeFuncPanic(regVars, "Sqrt", "(", "(", 5, "-", x, "-", x, "^", 3, ")", "/", 5, ")")
 
 	rootA, errA := FixedPointIteration1D(0.7, math.Pow(10, -4), 100, testFunction)
 
@@ -52,10 +53,10 @@ func TestFixedPointIteration1D(t *testing.T) {
 }
 
 func TestNewton1D(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	testFunction := gcf.MakeFunc(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
-	testFunctionD := gcf.MakeFunc(regVars, 3, "*", x, "^", 2, "+", 10, "*", x, "+", 1)
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	testFunction := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
+	testFunctionD := gcf.MakeFuncPanic(regVars, 3, "*", x, "^", 2, "+", 10, "*", x, "+", 1)
 
 	rootA, errA := Newton1D(0.7, math.Pow(10, -4), 5, testFunction, testFunctionD)
 
@@ -75,11 +76,11 @@ func TestNewton1D(t *testing.T) {
 }
 
 func TestModifiedNewton1D(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	testFunction := gcf.MakeFunc(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
-	testFunctionD := gcf.MakeFunc(regVars, 3, "*", x, "^", 2, "+", 10, "*", x, "+", 1)
-	testFunctionDD := gcf.MakeFunc(regVars, 6, "*", x, "+", 10)
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	testFunction := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
+	testFunctionD := gcf.MakeFuncPanic(regVars, 3, "*", x, "^", 2, "+", 10, "*", x, "+", 1)
+	testFunctionDD := gcf.MakeFuncPanic(regVars, 6, "*", x, "+", 10)
 
 	rootA, errA := ModifiedNewton1D(0.7, math.Pow(10, -4), 5, testFunction, testFunctionD, testFunctionDD)
 
@@ -99,9 +100,9 @@ func TestModifiedNewton1D(t *testing.T) {
 }
 
 func TestSecant1D(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	testFunction := gcf.MakeFunc(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	testFunction := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
 
 	rootA, errA := Secant1D(0.7, 0.75, math.Pow(10, -4), 5, testFunction)
 
@@ -121,9 +122,9 @@ func TestSecant1D(t *testing.T) {
 }
 
 func TestFalsePosition1D(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	testFunction := gcf.MakeFunc(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	testFunction := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, "-", 5)
 
 	rootA, errA := FalsePosition1D(0.7, 0.75, math.Pow(10, -4), 5, testFunction)
 
@@ -143,9 +144,9 @@ func TestFalsePosition1D(t *testing.T) {
 }
 
 func TestSteffensen1D(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	testFunction := gcf.MakeFunc(regVars, "Sqrt", "(", "(", 5, "-", x, "-", x, "^", 3, ")", "/", 5, ")")
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	testFunction := gcf.MakeFuncPanic(regVars, "Sqrt", "(", "(", 5, "-", x, "-", x, "^", 3, ")", "/", 5, ")")
 
 	rootA, errA := Steffensen1D(0.7, math.Pow(10, -4), 5, testFunction)
 
