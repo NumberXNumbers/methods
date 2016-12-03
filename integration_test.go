@@ -5,13 +5,14 @@ import (
 	"testing"
 
 	gcf "github.com/NumberXNumbers/types/gc/functions"
+	gcfargs "github.com/NumberXNumbers/types/gc/functions/arguments"
 )
 
 func TestEuler1D(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	omega := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x, omega}
-	f := gcf.MakeFunc(regVars, omega, "-", x, "^", 2, "+", 1)
+	x := gcfargs.NewVar(gcfargs.Value)
+	omega := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x, omega}
+	f := gcf.MakeFuncPanic(regVars, omega, "-", x, "^", 2, "+", 1)
 	a := 0.0
 	b := 2.0
 	N := 10
@@ -23,9 +24,9 @@ func TestEuler1D(t *testing.T) {
 }
 
 func TestTrapezoidRule(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	f := gcf.MakeFunc(regVars, "Sin", "(", x, ")")
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	f := gcf.MakeFuncPanic(regVars, "Sin", "(", x, ")")
 	a := 0.0
 	b := math.Pi / 4
 	result := TrapezoidRule(a, b, f)
@@ -35,9 +36,9 @@ func TestTrapezoidRule(t *testing.T) {
 }
 
 func TestSimpsonRule(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	f := gcf.MakeFunc(regVars, "Sin", "(", x, ")")
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	f := gcf.MakeFuncPanic(regVars, "Sin", "(", x, ")")
 	a := 0.0
 	b := math.Pi / 4
 	result := SimpsonRule(a, b, f)
@@ -47,9 +48,9 @@ func TestSimpsonRule(t *testing.T) {
 }
 
 func TestSimpson38Rule(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	f := gcf.MakeFunc(regVars, "Sin", "(", x, ")")
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	f := gcf.MakeFuncPanic(regVars, "Sin", "(", x, ")")
 	a := 0.0
 	b := math.Pi / 4
 	result := Simpson38Rule(a, b, f)
@@ -59,9 +60,9 @@ func TestSimpson38Rule(t *testing.T) {
 }
 
 func TestBooleRule(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x}
-	f := gcf.MakeFunc(regVars, "Sin", "(", x, ")")
+	x := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x}
+	f := gcf.MakeFuncPanic(regVars, "Sin", "(", x, ")")
 	a := 0.0
 	b := math.Pi / 4
 	result := BooleRule(a, b, f)
@@ -71,10 +72,10 @@ func TestBooleRule(t *testing.T) {
 }
 
 func TestRungeKutta(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	y := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x, y}
-	f := gcf.MakeFunc(regVars, y, "-", x, "^", 2, "+", 1)
+	x := gcfargs.NewVar(gcfargs.Value)
+	y := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x, y}
+	f := gcf.MakeFuncPanic(regVars, y, "-", x, "^", 2, "+", 1)
 	a := 0.0
 	b := 2.0
 	N := 10
@@ -97,10 +98,10 @@ func TestRungeKutta(t *testing.T) {
 }
 
 func TestModifiedEuler(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	y := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x, y}
-	f := gcf.MakeFunc(regVars, y, "-", x, "^", 2, "+", 1)
+	x := gcfargs.NewVar(gcfargs.Value)
+	y := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x, y}
+	f := gcf.MakeFuncPanic(regVars, y, "-", x, "^", 2, "+", 1)
 	a := 0.0
 	b := 2.0
 	N := 10
@@ -112,10 +113,10 @@ func TestModifiedEuler(t *testing.T) {
 }
 
 func TestHeun(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	y := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x, y}
-	f := gcf.MakeFunc(regVars, y, "-", x, "^", 2, "+", 1)
+	x := gcfargs.NewVar(gcfargs.Value)
+	y := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x, y}
+	f := gcf.MakeFuncPanic(regVars, y, "-", x, "^", 2, "+", 1)
 	a := 0.0
 	b := 2.0
 	N := 10
@@ -127,10 +128,10 @@ func TestHeun(t *testing.T) {
 }
 
 func TestAdamsBashforth(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	y := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x, y}
-	f := gcf.MakeFunc(regVars, y, "-", x, "^", 2, "+", 1)
+	x := gcfargs.NewVar(gcfargs.Value)
+	y := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x, y}
+	f := gcf.MakeFuncPanic(regVars, y, "-", x, "^", 2, "+", 1)
 	a := 0.0
 	b := 2.0
 	N := 10
@@ -160,10 +161,10 @@ func TestAdamsBashforth(t *testing.T) {
 }
 
 func TestAdamsBashforthMoulton(t *testing.T) {
-	x := gcf.NewVar(gcf.Value)
-	y := gcf.NewVar(gcf.Value)
-	regVars := []gcf.Var{x, y}
-	f := gcf.MakeFunc(regVars, y, "-", x, "^", 2, "+", 1)
+	x := gcfargs.NewVar(gcfargs.Value)
+	y := gcfargs.NewVar(gcfargs.Value)
+	regVars := []gcfargs.Var{x, y}
+	f := gcf.MakeFuncPanic(regVars, y, "-", x, "^", 2, "+", 1)
 	a := 0.0
 	b := 2.0
 	N := 10

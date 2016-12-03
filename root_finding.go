@@ -5,6 +5,7 @@ import (
 	"math"
 
 	gcf "github.com/NumberXNumbers/types/gc/functions"
+	gcfops "github.com/NumberXNumbers/types/gc/functions/ops"
 	gcv "github.com/NumberXNumbers/types/gc/values"
 	gcvops "github.com/NumberXNumbers/types/gc/values/ops"
 )
@@ -70,7 +71,7 @@ func FixedPointIteration1D(initialApprox float64, TOL float64, maxIteration int,
 // Newton1D is for solving the 1D  root finding newton's method
 func Newton1D(initialApprox float64, TOL float64, maxIteration int, f *gcf.Function, df *gcf.Function) (gcv.Value, error) {
 	previousApprox := gcv.MakeValue(initialApprox)
-	currentApprox := gcvops.Sub(previousApprox, gcf.MustDiv(f.MustEval(previousApprox), df.MustEval(previousApprox)).Value())
+	currentApprox := gcvops.Sub(previousApprox, gcfops.MustDiv(f.MustEval(previousApprox), df.MustEval(previousApprox)).Value())
 	var root gcv.Value
 	solutionFound := false
 
@@ -82,7 +83,7 @@ func Newton1D(initialApprox float64, TOL float64, maxIteration int, f *gcf.Funct
 		}
 
 		previousApprox = currentApprox
-		currentApprox = gcvops.Sub(previousApprox, gcf.MustDiv(f.MustEval(previousApprox), df.MustEval(previousApprox)).Value())
+		currentApprox = gcvops.Sub(previousApprox, gcfops.MustDiv(f.MustEval(previousApprox), df.MustEval(previousApprox)).Value())
 	}
 
 	if solutionFound {
@@ -99,8 +100,8 @@ func ModifiedNewton1D(initialApprox float64, TOL float64, maxIteration int, f *g
 	two := gcv.MakeValue(2)
 	fOfPreviousApproxConst := f.MustEval(previousApprox)
 	dfOfPreviousApproxConst := df.MustEval(previousApprox)
-	ratioA := gcf.MustMult(fOfPreviousApproxConst, dfOfPreviousApproxConst).Value()
-	ratioB := gcf.MustMult(fOfPreviousApproxConst, ddf.MustEval(previousApprox)).Value()
+	ratioA := gcfops.MustMult(fOfPreviousApproxConst, dfOfPreviousApproxConst).Value()
+	ratioB := gcfops.MustMult(fOfPreviousApproxConst, ddf.MustEval(previousApprox)).Value()
 	currentApprox := gcvops.Sub(previousApprox, gcvops.Div(ratioA, gcvops.Sub(gcvops.Pow(dfOfPreviousApproxConst.Value(), two), ratioB)))
 	var root gcv.Value
 	solutionFound := false
@@ -115,8 +116,8 @@ func ModifiedNewton1D(initialApprox float64, TOL float64, maxIteration int, f *g
 		previousApprox = currentApprox
 		fOfPreviousApproxConst := f.MustEval(previousApprox)
 		dfOfPreviousApproxConst := df.MustEval(previousApprox)
-		ratioA := gcf.MustMult(fOfPreviousApproxConst, dfOfPreviousApproxConst).Value()
-		ratioB := gcf.MustMult(fOfPreviousApproxConst, ddf.MustEval(previousApprox)).Value()
+		ratioA := gcfops.MustMult(fOfPreviousApproxConst, dfOfPreviousApproxConst).Value()
+		ratioB := gcfops.MustMult(fOfPreviousApproxConst, ddf.MustEval(previousApprox)).Value()
 		currentApprox = gcvops.Sub(previousApprox, gcvops.Div(ratioA, gcvops.Sub(gcvops.Pow(dfOfPreviousApproxConst.Value(), two), ratioB)))
 	}
 
