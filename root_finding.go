@@ -5,16 +5,23 @@ import (
 	"math"
 
 	gcf "github.com/NumberXNumbers/types/gc/functions"
-	gcfops "github.com/NumberXNumbers/types/gc/functions/ops"
 	gcv "github.com/NumberXNumbers/types/gc/values"
 	gcvops "github.com/NumberXNumbers/types/gc/values/ops"
 )
 
 // Bisection1D is for solving the 1D root finding bisection method
 func Bisection1D(intervalBegin float64, intervalEnd float64, TOL float64, maxIteration int, f *gcf.Function) (gcv.Value, error) {
-	fOfA := f.MustEval(intervalBegin).Value()
+	fOfA, errfA := evalV(f, intervalBegin)
+	if errfA != nil {
+		return nil, errfA
+	}
+
 	currentX := intervalBegin + (intervalEnd-intervalBegin)/float64(2)
-	fOfCurrentX := f.MustEval(currentX).Value()
+	fOfCurrentX, errCurrentX := evalV(f, currentX)
+	if errCurrentX != nil {
+		return nil, errCurrentX
+	}
+
 	var root gcv.Value
 	solutionFound := false
 
@@ -33,7 +40,10 @@ func Bisection1D(intervalBegin float64, intervalEnd float64, TOL float64, maxIte
 		}
 
 		currentX = intervalBegin + (intervalEnd-intervalBegin)/float64(2)
-		fOfCurrentX = f.MustEval(currentX).Value()
+		fOfCurrentX, errCurrentX = evalV(f, currentX)
+		if errCurrentX != nil {
+			return nil, errCurrentX
+		}
 	}
 
 	if solutionFound {
@@ -46,7 +56,11 @@ func Bisection1D(intervalBegin float64, intervalEnd float64, TOL float64, maxIte
 // FixedPointIteration1D is for solving the 1D root finding fixed point iteration method
 func FixedPointIteration1D(initialApprox float64, TOL float64, maxIteration int, f *gcf.Function) (gcv.Value, error) {
 	previousApprox := gcv.MakeValue(initialApprox)
-	currentApprox := f.MustEval(previousApprox).Value()
+	currentApprox, errCurrentApprox := evalV(f, previousApprox)
+	if errCurrentApprox != nil {
+		return nil, errCurrentApprox
+	}
+
 	var root gcv.Value
 	solutionFound := false
 
@@ -58,7 +72,10 @@ func FixedPointIteration1D(initialApprox float64, TOL float64, maxIteration int,
 		}
 
 		previousApprox = currentApprox
-		currentApprox = f.MustEval(previousApprox).Value()
+		currentApprox, errCurrentApprox = evalV(f, previousApprox)
+		if errCurrentApprox != nil {
+			return nil, errCurrentApprox
+		}
 	}
 
 	if solutionFound {
@@ -71,7 +88,17 @@ func FixedPointIteration1D(initialApprox float64, TOL float64, maxIteration int,
 // Newton1D is for solving the 1D  root finding newton's method
 func Newton1D(initialApprox float64, TOL float64, maxIteration int, f *gcf.Function, df *gcf.Function) (gcv.Value, error) {
 	previousApprox := gcv.MakeValue(initialApprox)
-	currentApprox := gcvops.Sub(previousApprox, gcfops.MustDiv(f.MustEval(previousApprox), df.MustEval(previousApprox)).Value())
+	fPA, errfPA := evalV(f, previousApprox)
+	if errfPA != nil {
+		return nil, errfPA
+	}
+
+	dfPA, errdfPA := evalV(df, previousApprox)
+	if errdfPA != nil {
+		return nil, errdfPA
+	}
+
+	currentApprox := gcvops.Sub(previousApprox, gcvops.Div(fPA, dfPA))
 	var root gcv.Value
 	solutionFound := false
 
@@ -83,7 +110,18 @@ func Newton1D(initialApprox float64, TOL float64, maxIteration int, f *gcf.Funct
 		}
 
 		previousApprox = currentApprox
-		currentApprox = gcvops.Sub(previousApprox, gcfops.MustDiv(f.MustEval(previousApprox), df.MustEval(previousApprox)).Value())
+
+		fPA, errfPA = evalV(f, previousApprox)
+		if errfPA != nil {
+			return nil, errfPA
+		}
+
+		dfPA, errdfPA = evalV(df, previousApprox)
+		if errdfPA != nil {
+			return nil, errdfPA
+		}
+
+		currentApprox = gcvops.Sub(previousApprox, gcvops.Div(fPA, dfPA))
 	}
 
 	if solutionFound {
@@ -98,11 +136,25 @@ func ModifiedNewton1D(initialApprox float64, TOL float64, maxIteration int, f *g
 	df *gcf.Function, ddf *gcf.Function) (gcv.Value, error) {
 	previousApprox := gcv.MakeValue(initialApprox)
 	two := gcv.MakeValue(2)
-	fOfPreviousApproxConst := f.MustEval(previousApprox)
-	dfOfPreviousApproxConst := df.MustEval(previousApprox)
-	ratioA := gcfops.MustMult(fOfPreviousApproxConst, dfOfPreviousApproxConst).Value()
-	ratioB := gcfops.MustMult(fOfPreviousApproxConst, ddf.MustEval(previousApprox)).Value()
-	currentApprox := gcvops.Sub(previousApprox, gcvops.Div(ratioA, gcvops.Sub(gcvops.Pow(dfOfPreviousApproxConst.Value(), two), ratioB)))
+
+	fPA, errfPA := evalV(f, previousApprox)
+	if errfPA != nil {
+		return nil, errfPA
+	}
+
+	dfPA, errdfPA := evalV(df, previousApprox)
+	if errdfPA != nil {
+		return nil, errdfPA
+	}
+
+	ddfPA, errddfPA := evalV(ddf, previousApprox)
+	if errddfPA != nil {
+		return nil, errddfPA
+	}
+
+	ratioA := gcvops.Mult(fPA, dfPA)
+	ratioB := gcvops.Mult(fPA, ddfPA)
+	currentApprox := gcvops.Sub(previousApprox, gcvops.Div(ratioA, gcvops.Sub(gcvops.Pow(dfPA, two), ratioB)))
 	var root gcv.Value
 	solutionFound := false
 
@@ -114,11 +166,24 @@ func ModifiedNewton1D(initialApprox float64, TOL float64, maxIteration int, f *g
 		}
 
 		previousApprox = currentApprox
-		fOfPreviousApproxConst := f.MustEval(previousApprox)
-		dfOfPreviousApproxConst := df.MustEval(previousApprox)
-		ratioA := gcfops.MustMult(fOfPreviousApproxConst, dfOfPreviousApproxConst).Value()
-		ratioB := gcfops.MustMult(fOfPreviousApproxConst, ddf.MustEval(previousApprox)).Value()
-		currentApprox = gcvops.Sub(previousApprox, gcvops.Div(ratioA, gcvops.Sub(gcvops.Pow(dfOfPreviousApproxConst.Value(), two), ratioB)))
+		fPA, errfPA = evalV(f, previousApprox)
+		if errfPA != nil {
+			return nil, errfPA
+		}
+
+		dfPA, errdfPA = evalV(df, previousApprox)
+		if errdfPA != nil {
+			return nil, errdfPA
+		}
+
+		ddfPA, errddfPA = evalV(ddf, previousApprox)
+		if errddfPA != nil {
+			return nil, errddfPA
+		}
+
+		ratioA := gcvops.Mult(fPA, dfPA)
+		ratioB := gcvops.Mult(fPA, ddfPA)
+		currentApprox = gcvops.Sub(previousApprox, gcvops.Div(ratioA, gcvops.Sub(gcvops.Pow(dfPA, two), ratioB)))
 	}
 
 	if solutionFound {
@@ -129,13 +194,22 @@ func ModifiedNewton1D(initialApprox float64, TOL float64, maxIteration int, f *g
 }
 
 // Secant1D is for solving the 1D root finding secant method
-func Secant1D(initialApprox1 float64, intitialApprox2 float64, TOL float64, maxIteration int, f *gcf.Function) (gcv.Value, error) {
+func Secant1D(initialApprox1 float64, initialApprox2 float64, TOL float64, maxIteration int, f *gcf.Function) (gcv.Value, error) {
 	previousApprox1 := gcv.MakeValue(initialApprox1)
-	previousApprox2 := gcv.MakeValue(intitialApprox2)
-	fOfPreviousApprox1 := f.MustEval(previousApprox1).Value()
-	fOfPreviousApprox2 := f.MustEval(previousApprox2).Value()
-	ratioA := gcvops.Div(gcvops.Sub(previousApprox2, previousApprox1), gcvops.Sub(fOfPreviousApprox2, fOfPreviousApprox1))
-	currentApprox := gcvops.Sub(previousApprox2, gcvops.Mult(fOfPreviousApprox2, ratioA))
+	previousApprox2 := gcv.MakeValue(initialApprox2)
+
+	fPA1, errfPA1 := evalV(f, previousApprox1)
+	if errfPA1 != nil {
+		return nil, errfPA1
+	}
+
+	fPA2, errfPA2 := evalV(f, previousApprox2)
+	if errfPA2 != nil {
+		return nil, errfPA2
+	}
+
+	ratioA := gcvops.Div(gcvops.Sub(previousApprox2, previousApprox1), gcvops.Sub(fPA2, fPA1))
+	currentApprox := gcvops.Sub(previousApprox2, gcvops.Mult(fPA2, ratioA))
 	var root gcv.Value
 	solutionFound := false
 
@@ -148,10 +222,19 @@ func Secant1D(initialApprox1 float64, intitialApprox2 float64, TOL float64, maxI
 
 		previousApprox1 = previousApprox2
 		previousApprox2 = currentApprox
-		fOfPreviousApprox1 := f.MustEval(previousApprox1).Value()
-		fOfPreviousApprox2 := f.MustEval(previousApprox2).Value()
-		ratioA := gcvops.Div(gcvops.Sub(previousApprox2, previousApprox1), gcvops.Sub(fOfPreviousApprox2, fOfPreviousApprox1))
-		currentApprox = gcvops.Sub(previousApprox2, gcvops.Mult(fOfPreviousApprox2, ratioA))
+
+		fPA1, errfPA1 = evalV(f, previousApprox1)
+		if errfPA1 != nil {
+			return nil, errfPA1
+		}
+
+		fPA2, errfPA2 = evalV(f, previousApprox2)
+		if errfPA2 != nil {
+			return nil, errfPA2
+		}
+
+		ratioA := gcvops.Div(gcvops.Sub(previousApprox2, previousApprox1), gcvops.Sub(fPA2, fPA1))
+		currentApprox = gcvops.Sub(previousApprox2, gcvops.Mult(fPA2, ratioA))
 	}
 
 	if solutionFound {
@@ -163,36 +246,56 @@ func Secant1D(initialApprox1 float64, intitialApprox2 float64, TOL float64, maxI
 
 // FalsePosition1D is for solving the 1D root finding false position method
 func FalsePosition1D(initialApprox1 float64, initialApprox2 float64, TOL float64, maxIteration int, f *gcf.Function) (gcv.Value, error) {
-	previousApprox1 := initialApprox1
-	previousApprox2 := initialApprox2
-	fOfApprox1 := f.MustEval(previousApprox1).Value().Real()
-	fOfApprox2 := f.MustEval(previousApprox2).Value().Real()
-	currentApprox := previousApprox2 - fOfApprox2*(previousApprox2-previousApprox1)/(fOfApprox2-fOfApprox1)
-	fOfCurrentApprox := f.MustEval(currentApprox).Value().Real()
-	root := float64(0)
+	previousApprox1 := gcv.MakeValue(initialApprox1)
+	previousApprox2 := gcv.MakeValue(initialApprox2)
+
+	fPA1, errfPA1 := evalV(f, previousApprox1)
+	if errfPA1 != nil {
+		return nil, errfPA1
+	}
+
+	fPA2, errfPA2 := evalV(f, previousApprox2)
+	if errfPA2 != nil {
+		return nil, errfPA2
+	}
+
+	ratioA := gcvops.Div(gcvops.Sub(previousApprox2, previousApprox1), gcvops.Sub(fPA2, fPA1))
+	currentApprox := gcvops.Sub(previousApprox2, gcvops.Mult(fPA2, ratioA))
+
+	fCA, errfCA := evalV(f, currentApprox)
+	if errfCA != nil {
+		return nil, errfCA
+	}
+
+	var root gcv.Value
 	solutionFound := false
 
 	for i := 1; i < maxIteration; i++ {
-		if math.Abs(currentApprox-previousApprox2) < TOL {
+		if gcvops.Abs(gcvops.Sub(currentApprox, previousApprox2)).Real() < TOL {
 			root = currentApprox
 			solutionFound = true
 			break
 		}
 
-		if fOfCurrentApprox*fOfApprox2 < 0 {
+		if gcvops.Mult(fCA, fPA2).Real() < 0 {
 			previousApprox1 = previousApprox2
-			fOfApprox1 = fOfApprox2
+			fPA1 = fPA2
 		}
 
 		previousApprox2 = currentApprox
-		fOfApprox2 = fOfCurrentApprox
+		fPA2 = fCA
 
-		currentApprox = previousApprox2 - fOfApprox2*(previousApprox2-previousApprox1)/(fOfApprox2-fOfApprox1)
-		fOfCurrentApprox = f.MustEval(currentApprox).Value().Real()
+		ratioA = gcvops.Div(gcvops.Sub(previousApprox2, previousApprox1), gcvops.Sub(fPA2, fPA1))
+		currentApprox = gcvops.Sub(previousApprox2, gcvops.Mult(fPA2, ratioA))
+
+		fCA, errfCA = evalV(f, currentApprox)
+		if errfCA != nil {
+			return nil, errfCA
+		}
 	}
 
 	if solutionFound {
-		return gcv.MakeValue(root), nil
+		return root, nil
 	}
 
 	return nil, errors.New("Unable to find root of given function")
