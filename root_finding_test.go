@@ -28,6 +28,14 @@ func TestBisection1D(t *testing.T) {
 	if errB == nil {
 		t.Error("Expected error")
 	}
+
+	testFunctionBad := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, 5)
+
+	_, errC := Bisection1D(0, 2, math.Pow(10, -4), 5, testFunctionBad)
+
+	if errC == nil {
+		t.Error("Expected error")
+	}
 }
 
 func TestFixedPointIteration1D(t *testing.T) {
@@ -48,6 +56,14 @@ func TestFixedPointIteration1D(t *testing.T) {
 	_, errB := FixedPointIteration1D(0.7, math.Pow(10, -4), 5, testFunction)
 
 	if errB == nil {
+		t.Error("Expected error")
+	}
+
+	testFunctionBad := gcf.MakeFuncPanic(regVars, "Sqrt", "(", "(", 5, "-", x, x, "^", 3, ")", "/", 5, ")")
+
+	_, errC := FixedPointIteration1D(0.7, math.Pow(10, -4), 5, testFunctionBad)
+
+	if errC == nil {
 		t.Error("Expected error")
 	}
 }
@@ -71,6 +87,21 @@ func TestNewton1D(t *testing.T) {
 	_, errB := Newton1D(0.7, math.Pow(10, -4), 2, testFunction, testFunctionD)
 
 	if errB == nil {
+		t.Error("Expected error")
+	}
+
+	testFunctionBad := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, 5)
+	testFunctionDBad := gcf.MakeFuncPanic(regVars, 3, "*", x, "^", 2, "+", 10, "*", x, 1)
+
+	_, errC := Newton1D(0.7, math.Pow(10, -4), 2, testFunctionBad, testFunctionD)
+
+	if errC == nil {
+		t.Error("Expected error")
+	}
+
+	_, errD := Newton1D(0.7, math.Pow(10, -4), 2, testFunction, testFunctionDBad)
+
+	if errD == nil {
 		t.Error("Expected error")
 	}
 }
@@ -97,6 +128,28 @@ func TestModifiedNewton1D(t *testing.T) {
 	if errB == nil {
 		t.Error("Expected error")
 	}
+
+	testFunctionBad := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, 5)
+	testFunctionDBad := gcf.MakeFuncPanic(regVars, 3, "*", x, "^", 2, "+", 10, "*", x, 1)
+	testFunctionDDBad := gcf.MakeFuncPanic(regVars, 6, "*", x, 10)
+
+	_, errC := ModifiedNewton1D(0.7, math.Pow(10, -4), 2, testFunctionBad, testFunctionD, testFunctionDD)
+
+	if errC == nil {
+		t.Error("Expected error")
+	}
+
+	_, errD := ModifiedNewton1D(0.7, math.Pow(10, -4), 2, testFunction, testFunctionDBad, testFunctionDD)
+
+	if errD == nil {
+		t.Error("Expected error")
+	}
+
+	_, errE := ModifiedNewton1D(0.7, math.Pow(10, -4), 2, testFunction, testFunctionD, testFunctionDDBad)
+
+	if errE == nil {
+		t.Error("Expected error")
+	}
 }
 
 func TestSecant1D(t *testing.T) {
@@ -117,6 +170,14 @@ func TestSecant1D(t *testing.T) {
 	_, errB := Secant1D(0.7, 0.75, math.Pow(10, -4), 2, testFunction)
 
 	if errB == nil {
+		t.Error("Expected error")
+	}
+
+	testFunctionBad := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, 5)
+
+	_, errC := Secant1D(0.7, 0.75, math.Pow(10, -4), 2, testFunctionBad)
+
+	if errC == nil {
 		t.Error("Expected error")
 	}
 }
@@ -141,6 +202,15 @@ func TestFalsePosition1D(t *testing.T) {
 	if errB == nil {
 		t.Error("Expected error")
 	}
+
+	testFunctionBad := gcf.MakeFuncPanic(regVars, x, "^", 3, "+", 5, "*", x, "^", 2, "+", x, 5)
+
+	_, errC := FalsePosition1D(0.7, 0.75, math.Pow(10, -4), 2, testFunctionBad)
+
+	if errC == nil {
+		t.Error("Expected error")
+	}
+
 }
 
 func TestSteffensen1D(t *testing.T) {
