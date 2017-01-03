@@ -20,7 +20,7 @@ func LU(A m.Matrix) (L, U, P m.Matrix, err error) {
 	l := m.NewMatrix(degree, degree)
 	u := m.NewMatrix(degree, degree)
 	for i := 0; i < degree; i++ {
-		sumUII := gcv.NewValue()
+		sumUII := gcv.Zero()
 		for k := 0; k < i; k++ {
 			sumUII = gcvops.Add(sumUII, gcvops.Mult(l.Get(i, k), u.Get(k, i)))
 		}
@@ -28,7 +28,7 @@ func LU(A m.Matrix) (L, U, P m.Matrix, err error) {
 		if i != degree-1 && valueU.Complex() == 0 {
 			count := i + 1
 			for count < degree {
-				sumUII := gcv.NewValue()
+				sumUII := gcv.Zero()
 				for k := 0; k < i; k++ {
 					sumUII = gcvops.Add(sumUII, gcvops.Mult(l.Get(count, k), u.Get(k, i)))
 				}
@@ -53,8 +53,8 @@ func LU(A m.Matrix) (L, U, P m.Matrix, err error) {
 		l.Set(i, i, 1)
 
 		for j := i + 1; j < degree; j++ {
-			sumU := gcv.NewValue()
-			sumL := gcv.NewValue()
+			sumU := gcv.Zero()
+			sumL := gcv.Zero()
 			for k := 0; k < i; k++ {
 				sumU = gcvops.Add(sumU, gcvops.Mult(l.Get(i, k), u.Get(k, j)))
 				sumL = gcvops.Add(sumL, gcvops.Mult(l.Get(j, k), u.Get(k, i)))
@@ -78,9 +78,9 @@ func LDLt(A m.Matrix) (L, D  m.Matrix, err error) {
 	d := m.NewMatrix(degree, degree)
 
 	for i := 0; i < degree; i++ {
-		sumLi := gcv.NewValue()
-		diff := gcv.NewValue()
-		sumLj := gcv.NewValue()
+		sumLi := gcv.Zero()
+		diff := gcv.Zero()
+		sumLj := gcv.Zero()
 		counter := 0
 		tempVector := v.NewVector(v.RowSpace, i+1)
 		for j := 0; j < degree; j++ {
@@ -97,7 +97,7 @@ func LDLt(A m.Matrix) (L, D  m.Matrix, err error) {
 				l.Set(i, i, 1)
 			} else {
 				if j > tempVector.Len() {
-					sumLi = gcv.NewValue()
+					sumLi = gcv.Zero()
 				} else {
 					sumLj = gcvops.Add(sumLj, gcvops.Mult(l.Get(j, counter), tempVector.Get(counter)))
 				}
